@@ -1,16 +1,29 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
   moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model watches {
+  id               Int    @id @default(autoincrement())
+  brand            String @db.VarChar(255)
+  model            String @db.VarChar(255)
+  movement_type    String @db.VarChar(100)
+  price            Int
+  water_resistance Int
+  cart cart[]
+}
+
+model cart {
+  id       Int      @id @default(autoincrement())
+  watch_id Int 
+  watches watches @relation(fields: [watch_id], references: [id])
+  quantity Int
+  added_at DateTime
 }
